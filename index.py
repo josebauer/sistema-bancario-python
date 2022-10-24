@@ -29,12 +29,16 @@ class Conta:
         self._historico = Historico()
     
     @classmethod
+    def nova_conta(cls, cliente, numero):
+        return cls(numero, cliente)
+
+    @property
     def saldo(self):
         return self._saldo
     
     @property
     def numero(self):
-        return self._numero
+        return self._numero 
     
     @property
     def agencia(self):
@@ -110,18 +114,18 @@ class ContaCorrente(Conta):
 
 class Historico:
     def __init__(self):
-        self.transacoes = []
+        self._transacoes = []
 
     @property
     def transacoes(self):
-        return self.transacoes
+        return self._transacoes
     
     def adicionar_transacao(self, transacao):
         self._transacoes.append(
             {
                 'tipo': transacao.__class__.__name__,
                 'valor': transacao.valor,
-                'data': datetime.now().strftime('%d-%m-%Y %H:%M:%s'),
+                'data': datetime.now().strftime('%d-%m-%Y %H:%M:%S'),
             }
         )
 
@@ -151,7 +155,7 @@ class Saque(Transacao):
 
 class Deposito(Transacao):
     def __init__(self, valor):
-        self.valor = valor
+        self._valor = valor
 
     @property
     def valor(self):
@@ -200,7 +204,7 @@ def depositar(clientes):
 
     if not cliente:
         print('\nCliente não encontrado!')
-    
+        menu()
     valor = float(input('Informe o valor do depósito: '))
     transacao = Deposito(valor)
 
@@ -239,7 +243,7 @@ def exibir_extrato(clientes):
     if not conta:
         return
 
-    print('\n=============== EXTRATO ===============')
+    print('\n=============== EXTRATO ===============\n')
     transacoes = conta.historico.transacoes
 
     extrato = ''
@@ -247,7 +251,7 @@ def exibir_extrato(clientes):
         extrato = 'Não foram realizadas movimentações.'
     else:
         for transacao in transacoes:
-            extrato += f"\n{transacao['tipo']}: \n\tR${transacao['valor']:.2f}"
+            extrato += f"\n{transacao['tipo']}:\n\tR${transacao['valor']:.2f}"
 
     print(extrato)
     print(f'\nSaldo:\n\tR$ {conta.saldo:.2f}')
